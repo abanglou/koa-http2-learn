@@ -1,6 +1,7 @@
 const koa = require('koa');
 const fs = require('fs');
 const Router = require('koa-router');
+const logger = require('koa-logger');
 const mime = require('mime');
 const http2 = require('http2');
 
@@ -30,7 +31,8 @@ router.get('/learn', async ctx => {
 })
 
 
-app.use(router.routes());
+app.use(logger())
+.use(router.routes());
 
 http2.createSecureServer(options,app.callback())
 .listen(8001,(err)=>{
@@ -55,7 +57,7 @@ const getFdAndHeader = (fileName) => {
     const headers = {
         'content-length': stat.size,
         'last-modified': stat.mtime.toUTCString(),
-        'content-type': mime.lookup(filePath)
+        'content-type': mime.getType(filePath)
     };
     return {fd, headers, urlPath};
 };
